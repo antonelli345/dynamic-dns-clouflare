@@ -8,6 +8,7 @@ Atualize automaticamente seu IP público no Cloudflare, perfeito para conexões 
 
 - 🔍 Descobre seu IP público
 - 🔄 Atualiza automaticamente o registro DNS tipo "A" no Cloudflare
+- 🛡 Verifica se o `DNS_RECORD_ID` está correto e sugere valores válidos se necessário
 - 🖥 Ideal para rodar via `crontab` no Linux
 - ⚙️ Uso simples com variáveis de ambiente
 
@@ -29,6 +30,9 @@ pip install -r requirements.txt
 ```
 
 ### 3. Configure seu `.env` (baseado no `.env.example`)
+
+💡 Dica: Caso não saiba onde encontrar o DNS_RECORD_ID, foi incluído um script auxiliar chamado get_dns_record_id.py.
+Basta rodá-lo com sua API_TOKEN e ZONE_ID corretamente preenchidos no .env, e ele listará os IDs disponíveis para você copiar e colar. 👇
 
 ```dotenv
 API_TOKEN=sua_chave
