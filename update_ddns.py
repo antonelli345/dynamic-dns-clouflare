@@ -20,22 +20,38 @@ def update_dns_record(ip_adress):
         'Authorization': f'Bearer {api_token}',
         'Content-Type': 'application/json'
     }
-    data = {
-        'type': 'A',
-        'name': os.getenv("DNS_RECORD_NAME"),
-        'content': ip_adress,
-        'ttl': 120,
-        'proxied': False
-    }
-    response = requests.put(
-        f'https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records/{dns_record_id}',
-        headers=headers,
-        json=data
-    )
-    if response.status_code == 200:
-        print('DNS record updated successfully')
-    else:
-        print('Failed to update DNS record:', response.json())
+
+    url = f'https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records'
+    response = requests.get(url, headers=headers)
+    records = response.json()['result']
+
+    for record in records:
+        if record['type'] == 'A':
+            name = record['name']
+            current_ip = record['content']
+            record_id = record['id']
+            proxied = record['proxied']
+
+            if current_ip != ip_adress:
+                print(f'Updating DNS record {name} from {current_ip} to {ip_adress}')
+                data = {
+                    'type': 'A',
+                    'name': name,
+                    'content': ip_adress,
+                    'ttl': 120,
+                    'proxied': proxied
+                }
+                update_url = f'{url}/{record_id}'
+                r = requests.put(update_url, headers=headers, json=data)
+
+                if r.status_code == 200:
+                    print(f"Registro {name} atualizado com sucesso!")
+                else:
+                    print(f"Falha ao atualizar {name}: {r.text}")
+            else:
+                print(f" {name} já está com o IP correto.")
+
+
 
 if __name__ == '__main__':
     # Get the current public IP address
